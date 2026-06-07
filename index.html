@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroFluency - Break the B2 Wall to C1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        <span class="logo-text">AeroFluency</span>
+      </div>
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="writing">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          Writing Editor
+        </button>
+        <button class="nav-item" data-tab="reading">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20M4 19.5V3.5A2.5 2.5 0 0 1 6.5 1h13.5v18.5"/>
+          </svg>
+          Reading Drills
+        </button>
+        <button class="nav-item" data-tab="listening">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3"/>
+          </svg>
+          Listening Summary
+        </button>
+        <button class="nav-item" data-tab="speaking">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+          </svg>
+          Speaking Debate
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="settings-btn" id="open-settings">
+          <svg class="settings-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          API Settings
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <header class="main-header">
+        <div class="header-title">
+          <h1 id="current-title">Writing Editor</h1>
+          <p id="current-subtitle">Hone your vocabulary, eliminate basic transitions, and restructure into C1-level prose.</p>
+        </div>
+        <div class="badge-panel">
+          <span class="badge badge-level">Level Tracker</span>
+          <div class="level-progress">
+            <span class="progress-label">B2</span>
+            <div class="progress-track"><div class="progress-bar" style="width: 55%;"></div></div>
+            <span class="progress-label">C1</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Panel Content Wrapper -->
+      <div class="panel-container">
+        
+        <!-- Tab 1: Writing -->
+        <section class="tab-panel active" id="tab-writing">
+          <div class="split-view">
+            <div class="editor-side">
+              <div class="side-header">
+                <h3>Draft Area</h3>
+                <span class="char-count" id="writing-count">0 characters</span>
+              </div>
+              <textarea id="writing-input" placeholder="Type or paste a paragraph (e.g. 'I think that computer programming is a very good skill for getting jobs because companies need smart people...'). Minimum 30 characters."></textarea>
+              <button class="primary-btn" id="btn-analyze-writing">
+                <span>Analyze Text</span>
+                <div class="spinner hidden"></div>
+              </button>
+            </div>
+            <div class="feedback-side">
+              <div class="side-header">
+                <h3>C1-ify Analysis</h3>
+              </div>
+              <div class="feedback-content empty" id="writing-feedback">
+                <div class="empty-state">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+                  </svg>
+                  <p>Write something in the draft area and click "Analyze Text" to receive structured feedback.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 2: Reading -->
+        <section class="tab-panel" id="tab-reading">
+          <div class="split-view">
+            <div class="editor-side">
+              <div class="side-header">
+                <h3>Reading Exercise</h3>
+                <button class="secondary-btn" id="btn-generate-reading">Generate New Text</button>
+              </div>
+              <div class="reading-viewer empty" id="reading-content">
+                <div class="empty-state">
+                  <p>Click "Generate New Text" to create a fresh C1 comprehension exercise.</p>
+                </div>
+              </div>
+            </div>
+            <div class="feedback-side">
+              <div class="side-header">
+                <h3>Vocabulary & Context Analysis</h3>
+              </div>
+              <div class="feedback-content empty" id="reading-feedback">
+                <div class="empty-state">
+                  <p>Generate and read the text first. Answers and lexical highlights will appear here.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 3: Listening -->
+        <section class="tab-panel" id="tab-listening">
+          <div class="split-view">
+            <div class="editor-side">
+              <div class="side-header">
+                <h3>Audio Playback</h3>
+                <button class="secondary-btn" id="btn-generate-listening">Generate Audio Passage</button>
+              </div>
+              <div class="listening-card" id="listening-player-card">
+                <div class="audio-controls">
+                  <button class="play-btn" id="btn-play-audio" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                  </button>
+                  <div class="audio-info">
+                    <span class="audio-status" id="audio-status-label">No passage generated</span>
+                    <span class="audio-timer">00:00 / --:--</span>
+                  </div>
+                </div>
+                <div class="voice-selector-container">
+                  <label for="voice-select">Voice Model:</label>
+                  <select id="voice-select"></select>
+                </div>
+              </div>
+              <div class="summary-area">
+                <label for="listening-summary-input">Write a 3-sentence summary of the passage:</label>
+                <textarea id="listening-summary-input" placeholder="Type your summary here after listening..." disabled></textarea>
+                <button class="primary-btn" id="btn-submit-summary" disabled>
+                  <span>Submit Summary</span>
+                  <div class="spinner hidden"></div>
+                </button>
+              </div>
+            </div>
+            <div class="feedback-side">
+              <div class="side-header">
+                <h3>Comprehension Feedback</h3>
+              </div>
+              <div class="feedback-content empty" id="listening-feedback">
+                <div class="empty-state">
+                  <p>Listen to the generated passage and submit your summary to get evaluated.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tab 4: Speaking -->
+        <section class="tab-panel" id="tab-speaking">
+          <div class="split-view">
+            <div class="editor-side">
+              <div class="side-header">
+                <h3>Debate Stage</h3>
+                <button class="secondary-btn" id="btn-generate-debate">Get Debate Prompt</button>
+              </div>
+              <div class="debate-prompt-box empty" id="debate-prompt">
+                <p>Click "Get Debate Prompt" to initialize a speaking challenge.</p>
+              </div>
+              <div class="speaking-controls">
+                <button class="mic-btn" id="btn-toggle-mic" disabled>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+                  </svg>
+                </button>
+                <span class="mic-status" id="mic-status-label">Initialize prompt first</span>
+              </div>
+              <div class="transcript-preview">
+                <label>Speech Transcript Preview:</label>
+                <div class="transcript-box" id="speech-transcript" contenteditable="true">...</div>
+              </div>
+              <button class="primary-btn" id="btn-analyze-speaking" disabled>
+                <span>Analyze My Argument</span>
+                <div class="spinner hidden"></div>
+              </button>
+            </div>
+            <div class="feedback-side">
+              <div class="side-header">
+                <h3>Speaking Evaluation</h3>
+              </div>
+              <div class="feedback-content empty" id="speaking-feedback">
+                <div class="empty-state">
+                  <p>Your fluency critique, collocation ratings, and grammatical review will appear here.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal-backdrop hidden" id="settings-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>API Credentials</h2>
+          <button class="close-btn" id="close-settings">×</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">This app accesses the <strong>Qwen/Qwen2.5-72B-Instruct</strong> model hosted for free via Hugging Face Serverless. Get a free API Token in 2 minutes.</p>
+          <ol class="setup-steps">
+            <li>Go to <a href="https://huggingface.co/settings/tokens" target="_blank" rel="noopener noreferrer">huggingface.co/settings/tokens</a>.</li>
+            <li>Click <strong>New token</strong>, set name to "AeroFluency", and set role to <strong>Read</strong>.</li>
+            <li>Copy the token and paste it below.</li>
+          </ol>
+          <div class="form-group">
+            <label for="provider-select">Inference Provider:</label>
+            <select id="provider-select">
+              <option value="huggingface">Hugging Face (Qwen/Qwen2.5-7B-Instruct)</option>
+              <option value="gemini">Google Gemini (gemini-1.5-flash - Free)</option>
+              <option value="ollama">Local Ollama (qwen2.5:7b or similar - 100% Local)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="hf-token-input" id="token-label">API Key / Token:</label>
+            <input type="password" id="hf-token-input" placeholder="Enter provider API key/token">
+          </div>
+          <button class="primary-btn" id="btn-save-settings">Save Configurations</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
