@@ -45,6 +45,12 @@
           </svg>
           Speaking Debate
         </button>
+        <button class="nav-item" data-tab="flashcards">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+          </svg>
+          AeroRepetition
+        </button>
       </nav>
       <div class="sidebar-footer">
         <button class="settings-btn" id="open-settings">
@@ -222,6 +228,99 @@
             </div>
           </div>
         </section>
+
+        <!-- Tab 5: Flashcards -->
+        <section class="tab-panel" id="tab-flashcards">
+          <div class="split-view">
+            <div class="editor-side">
+              <div class="side-header">
+                <h3>AeroRepetition Review</h3>
+                <span class="char-count" id="flashcard-progress-label">0 cards due</span>
+              </div>
+              
+              <div class="flashcard-container">
+                <div class="flashcard" id="active-flashcard">
+                  <div class="flashcard-inner" id="flashcard-inner">
+                    <!-- Front of Card -->
+                    <div class="flashcard-front">
+                      <div class="card-tag">B2 CLUE / DEFINITION</div>
+                      <div class="card-body" id="card-front-content">
+                        Initialize review to start.
+                      </div>
+                      <div class="card-instruction">Click card to reveal C1 upgrade</div>
+                    </div>
+                    <!-- Back of Card -->
+                    <div class="flashcard-back">
+                      <div class="card-tag">C1 ADVANCED UPGRADE</div>
+                      <div class="card-body" id="card-back-content">
+                        <h2 id="card-back-term">--</h2>
+                        <p id="card-back-example">--</p>
+                      </div>
+                      <div class="card-instruction">Rate your recall below:</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flashcard-actions hidden" id="flashcard-actions">
+                <button class="rate-btn again" data-score="1">Again <span>(1d)</span></button>
+                <button class="rate-btn hard" data-score="2">Hard <span>(1d)</span></button>
+                <button class="rate-btn good" data-score="4">Good <span>(6d)</span></button>
+                <button class="rate-btn easy" data-score="5">Easy <span>(14d)</span></button>
+              </div>
+              
+              <div class="flashcard-start-container" id="flashcard-start-container">
+                <button class="primary-btn" id="btn-start-review">
+                  <span>Start Review Session</span>
+                </button>
+              </div>
+            </div>
+            
+            <div class="feedback-side">
+              <div class="side-header">
+                <h3>Deck Statistics & Management</h3>
+              </div>
+              <div class="feedback-content" id="flashcard-stats-panel">
+                <div class="feedback-card">
+                  <h4>Spaced Memory Stats</h4>
+                  <div class="metric-grid">
+                    <div class="metric-item">
+                      <span class="metric-name">Active Cards</span>
+                      <span class="metric-value" id="stat-active-cards">0</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-name">Due Today</span>
+                      <span class="metric-value" id="stat-due-today">0</span>
+                    </div>
+                  </div>
+                  <div class="level-progress" style="margin-top: 16px; width: 100%;">
+                    <span class="progress-label">Session Progress</span>
+                    <div class="progress-track" style="flex: 1; margin: 0 10px;"><div class="progress-bar" id="session-progress-bar" style="width: 0%;"></div></div>
+                    <span class="progress-label" id="session-progress-text">0/0</span>
+                  </div>
+                </div>
+                
+                <div class="feedback-card">
+                  <h4>Add Custom Card</h4>
+                  <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="new-card-front" style="font-size: 13px;">B2 Term / Clue:</label>
+                    <input type="text" id="new-card-front" placeholder="e.g., in my opinion, very important" style="padding: 12px 16px; font-size: 15px;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 12px;">
+                    <label for="new-card-back" style="font-size: 13px;">C1 Upgrade Word/Phrase:</label>
+                    <input type="text" id="new-card-back" placeholder="e.g., from my perspective, of paramount importance" style="padding: 12px 16px; font-size: 15px;">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 16px;">
+                    <label for="new-card-example" style="font-size: 13px;">Example Sentence:</label>
+                    <input type="text" id="new-card-example" placeholder="e.g., Upgraded collocations are of paramount importance." style="padding: 12px 16px; font-size: 15px;">
+                  </div>
+                  <button class="secondary-btn" id="btn-add-custom-card" style="width: 100%;">Add to Deck</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
 
       </div>
     </main>

@@ -14,6 +14,25 @@ const hfTokenInput = document.getElementById("hf-token-input");
 const btnSaveSettings = document.getElementById("btn-save-settings");
 const providerSelect = document.getElementById("provider-select");
 
+// Flashcard DOM Elements
+const activeFlashcard = document.getElementById("active-flashcard");
+const flashcardInner = document.getElementById("flashcard-inner");
+const cardFrontContent = document.getElementById("card-front-content");
+const cardBackTerm = document.getElementById("card-back-term");
+const cardBackExample = document.getElementById("card-back-example");
+const flashcardActions = document.getElementById("flashcard-actions");
+const flashcardStartContainer = document.getElementById("flashcard-start-container");
+const btnStartReview = document.getElementById("btn-start-review");
+const btnAddCustomCard = document.getElementById("btn-add-custom-card");
+const newCardFront = document.getElementById("new-card-front");
+const newCardBack = document.getElementById("new-card-back");
+const newCardExample = document.getElementById("new-card-example");
+const statActiveCards = document.getElementById("stat-active-cards");
+const statDueToday = document.getElementById("stat-due-today");
+const sessionProgressBar = document.getElementById("session-progress-bar");
+const sessionProgressText = document.getElementById("session-progress-text");
+const flashcardProgressLabel = document.getElementById("flashcard-progress-label");
+
 // State management
 let hfToken = localStorage.getItem("hf_token") || "";
 let activeProvider = localStorage.getItem("provider") || "huggingface";
@@ -106,6 +125,10 @@ function updateHeaderContent(tabId) {
     speaking: {
       title: "Speaking Debate",
       sub: "Engage in vocal debate on abstract concepts. Transcribe your speech and analyze lexical diversity."
+    },
+    flashcards: {
+      title: "Spaced-Repetition Deck",
+      sub: "Reinforce advanced C1 expressions and upgraded collocations using active recall and spaced repetition memory."
     }
   };
   
@@ -417,6 +440,22 @@ Estimate the score percentage realistically. Make sure the HTML output contains 
 const btnGenerateReading = document.getElementById("btn-generate-reading");
 const readingContent = document.getElementById("reading-content");
 const readingFeedback = document.getElementById("reading-feedback");
+
+// Click on collocation to add to flashcards
+readingContent.addEventListener("click", (e) => {
+  const target = e.target.closest(".c1-term");
+  if (!target) return;
+  
+  const term = target.textContent.trim();
+  const definition = target.getAttribute("title") || "C1 collocation";
+  
+  const confirmAdd = confirm(`Would you like to add "${term}" (${definition}) to your repetition deck?`);
+  if (confirmAdd) {
+    if (window.addWordToFlashcards) {
+      window.addWordToFlashcards(definition, term, `Make sure you learn and use the collocation: "${term}".`);
+    }
+  }
+});
 
 btnGenerateReading.addEventListener("click", async () => {
   toggleLoader(btnGenerateReading, true);
@@ -902,3 +941,313 @@ function toggleLoader(button, isLoading) {
     if (span) span.style.opacity = "1";
   }
 }
+
+/**
+ * -------------------------------------------------------------
+ * 5. FLASHCARD SPARK DECK LOGIC (AeroRepetition)
+ * -------------------------------------------------------------
+ */
+let flashcardDeck = [];
+let reviewQueue = [];
+let currentReviewIndex = 0;
+let sessionCardCount = 0;
+
+const DEFAULT_CARDS = [
+  {
+    front: "in my opinion / I think",
+    back: "from my perspective",
+    example: "From my perspective, global policies should focus on local community welfare first.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  },
+  {
+    front: "very important",
+    back: "of paramount importance",
+    example: "Acquiring C1 fluency is of paramount importance for academic success.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  },
+  {
+    front: "very bad",
+    back: "detrimental",
+    example: "A lack of structural transition words can have a detrimental effect on your essay.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  },
+  {
+    front: "shows / proves",
+    back: "substantiates",
+    example: "The research substantiates the claim that local models run faster offline.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  },
+  {
+    front: "many / a lot of",
+    back: "a plethora of",
+    example: "There are a plethora of resources available for studying high-register English.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  },
+  {
+    front: "to solve a problem",
+    back: "to alleviate a concern",
+    example: "The new offline VOSK server alleviates the proxy network issue completely.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  },
+  {
+    front: "to understand / find out",
+    back: "to discern",
+    example: "We must discern the subtle differences in meaning between these advanced collocations.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  },
+  {
+    front: "helpful / good",
+    back: "highly beneficial",
+    example: "Practicing with a local debate partner is highly beneficial for speaking speed.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  },
+  {
+    front: "change / difference",
+    back: "divergence",
+    example: "The divergence in opinions led to a highly engaging spoken debate.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  },
+  {
+    front: "make something happen",
+    back: "precipitate",
+    example: "The introduction of automated scoring precipitated a surge in user engagement.",
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  }
+];
+
+// SM-2 Spaced Repetition scheduler
+function updateCardSchedule(card, score) {
+  let q = 1;
+  if (score === 2) q = 3;
+  if (score === 4) q = 4;
+  if (score === 5) q = 5;
+
+  if (q >= 3) {
+    if (card.repetitions === 0) {
+      card.interval = 1;
+    } else if (card.repetitions === 1) {
+      card.interval = 6;
+    } else {
+      card.interval = Math.round(card.interval * card.easeFactor);
+    }
+    card.repetitions++;
+  } else {
+    card.repetitions = 0;
+    card.interval = 1;
+  }
+
+  card.easeFactor = card.easeFactor + (0.1 - (5 - q) * (0.08 + (5 - q) * 0.02));
+  if (card.easeFactor < 1.3) {
+    card.easeFactor = 1.3;
+  }
+
+  const now = new Date();
+  now.setDate(now.getDate() + card.interval);
+  card.nextReviewDate = now.getTime();
+}
+
+function loadDeck() {
+  const data = localStorage.getItem("aerofluency_deck");
+  if (data) {
+    try {
+      flashcardDeck = JSON.parse(data);
+    } catch (e) {
+      console.error("Error parsing flashcard deck:", e);
+      flashcardDeck = [...DEFAULT_CARDS];
+    }
+  } else {
+    flashcardDeck = [...DEFAULT_CARDS];
+    saveDeck();
+  }
+  updateStats();
+}
+
+function saveDeck() {
+  localStorage.setItem("aerofluency_deck", JSON.stringify(flashcardDeck));
+}
+
+function updateStats() {
+  if (!statActiveCards || !statDueToday) return;
+  
+  const now = Date.now();
+  const dueCount = flashcardDeck.filter(card => !card.nextReviewDate || card.nextReviewDate <= now).length;
+  
+  statActiveCards.textContent = flashcardDeck.length;
+  statDueToday.textContent = dueCount;
+  
+  if (flashcardProgressLabel) {
+    flashcardProgressLabel.textContent = `${dueCount} cards due`;
+  }
+}
+
+function displayCurrentCard() {
+  if (currentReviewIndex >= reviewQueue.length) {
+    // Session completed
+    if (flashcardActions) flashcardActions.classList.add("hidden");
+    if (flashcardStartContainer) flashcardStartContainer.classList.remove("hidden");
+    
+    if (cardFrontContent) cardFrontContent.textContent = "Review session completed! You have cleared all due cards.";
+    if (cardBackTerm) cardBackTerm.textContent = "Outstanding!";
+    if (cardBackExample) cardBackExample.textContent = "Your spaced repetition intervals have been successfully updated. See you tomorrow!";
+    if (flashcardInner) flashcardInner.classList.remove("flipped");
+    
+    if (sessionProgressBar) sessionProgressBar.style.width = "100%";
+    if (sessionProgressText) sessionProgressText.textContent = `${sessionCardCount}/${sessionCardCount}`;
+    updateStats();
+    return;
+  }
+  
+  const card = reviewQueue[currentReviewIndex];
+  
+  // Reset flip status
+  if (flashcardInner) flashcardInner.classList.remove("flipped");
+  
+  // Set contents
+  setTimeout(() => {
+    if (cardFrontContent) cardFrontContent.textContent = card.front;
+    if (cardBackTerm) cardBackTerm.textContent = card.back;
+    if (cardBackExample) cardBackExample.textContent = card.example;
+  }, 150); // Small delay to sync with rotation flip back
+}
+
+// Global hook to add flashcards dynamically from other views
+window.addWordToFlashcards = function(front, back, example = "") {
+  if (!flashcardDeck) flashcardDeck = [];
+  
+  const exists = flashcardDeck.some(card => card.back.toLowerCase().trim() === back.toLowerCase().trim());
+  if (exists) {
+    alert(`"${back}" is already in your AeroRepetition deck!`);
+    return;
+  }
+  
+  const newCard = {
+    front: front.trim(),
+    back: back.trim(),
+    example: example.trim() || `I need to practice the word: ${back.trim()}.`,
+    repetitions: 0,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReviewDate: Date.now()
+  };
+  
+  flashcardDeck.push(newCard);
+  saveDeck();
+  updateStats();
+  alert(`"${back}" has been added to your AeroRepetition deck!`);
+};
+
+// Event Listeners
+if (activeFlashcard) {
+  activeFlashcard.addEventListener("click", () => {
+    if (flashcardInner) {
+      flashcardInner.classList.toggle("flipped");
+    }
+  });
+}
+
+if (btnStartReview) {
+  btnStartReview.addEventListener("click", () => {
+    const now = Date.now();
+    reviewQueue = flashcardDeck.filter(card => !card.nextReviewDate || card.nextReviewDate <= now);
+    
+    if (reviewQueue.length === 0) {
+      alert("All caught up! No due flashcards to review today.");
+      return;
+    }
+    
+    currentReviewIndex = 0;
+    sessionCardCount = reviewQueue.length;
+    
+    if (flashcardStartContainer) flashcardStartContainer.classList.add("hidden");
+    if (flashcardActions) flashcardActions.classList.remove("hidden");
+    
+    if (sessionProgressBar) sessionProgressBar.style.width = "0%";
+    if (sessionProgressText) sessionProgressText.textContent = `0/${sessionCardCount}`;
+    
+    displayCurrentCard();
+  });
+}
+
+// Rate recall action handlers
+const rateButtons = document.querySelectorAll(".rate-btn");
+rateButtons.forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation(); // Avoid triggering card flip on click
+    
+    if (currentReviewIndex >= reviewQueue.length) return;
+    
+    const score = parseInt(btn.getAttribute("data-score"), 10);
+    const card = reviewQueue[currentReviewIndex];
+    
+    // Update interval schedules
+    updateCardSchedule(card, score);
+    saveDeck();
+    
+    // Advance progress
+    currentReviewIndex++;
+    const progressPercent = Math.round((currentReviewIndex / sessionCardCount) * 100);
+    if (sessionProgressBar) sessionProgressBar.style.width = `${progressPercent}%`;
+    if (sessionProgressText) sessionProgressText.textContent = `${currentReviewIndex}/${sessionCardCount}`;
+    
+    // Flip card back first, then display next card
+    if (flashcardInner) {
+      flashcardInner.classList.remove("flipped");
+    }
+    
+    setTimeout(() => {
+      displayCurrentCard();
+    }, 350); // Wait for card flip back transition before showing new word
+  });
+});
+
+if (btnAddCustomCard) {
+  btnAddCustomCard.addEventListener("click", () => {
+    const frontVal = newCardFront.value.trim();
+    const backVal = newCardBack.value.trim();
+    const exampleVal = newCardExample.value.trim();
+    
+    if (!frontVal || !backVal) {
+      alert("Please fill in both the B2 Clue and the C1 Upgrade.");
+      return;
+    }
+    
+    window.addWordToFlashcards(frontVal, backVal, exampleVal);
+    
+    newCardFront.value = "";
+    newCardBack.value = "";
+    newCardExample.value = "";
+  });
+}
+
+// Load deck on startup
+loadDeck();
